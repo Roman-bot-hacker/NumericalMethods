@@ -23,6 +23,9 @@ class Matrix:
         print("A:")
         pprint.pprint(self.A)
 
+        print("B: ")
+        pprint.pprint(self.B)
+
         print("P:")
         pprint.pprint(P)
 
@@ -35,24 +38,30 @@ class Matrix:
     def straight_move(self):
         Y = range(self.n)
         Y = reshape(Y, (self.n, 1))
-        Y[0] = self.B[0] / self.L[0][0]
-        for i in range(1, self.n):
-            for m in range(0, i - 2):
-                s = self.L[i][m] * Y[m]
-            Y[i] = (self.B[i] - s) / self.L[i][i]
+        Y[0] = float(self.B[0] / self.L[0][0])
+        for i in range(1, self.n-1):
+            s = 0
+            for m in range(0, i - 1):
+                s += self.L[i][m] * Y[m]
+            Y[i] = float((self.B[i] - s) / self.L[i][i])
+        print("Y: ")
+        pprint.pprint(Y)
         return Y
 
     def reverse_move(self,Y):
         X = range(self.n)
         X = reshape(X, (self.n, 1))
-        X[self.n-1] = Y[self.n-1]
-        for i in range(self.n - 1, 0):
-            for m in range(i, self.n):
-                s = self.U[i][m] * X[m]
-            X[i] = Y[i] - s
+        X[self.n-1] = float(Y[self.n-1])
+        for i in range(self.n - 2, 0, -1):
+            s = 0
+            for m in range(self.n-1, i-1, -1):
+                s += self.U[i][m] * X[m]
+            X[i] = float((Y[i] - s)/self.U[i][i])
         return X
+
 
 if __name__ == "__main__":
     matrix = Matrix()
     matrix.LU()
+    print("X: ")
     pprint.pprint(matrix.reverse_move(matrix.straight_move()))
